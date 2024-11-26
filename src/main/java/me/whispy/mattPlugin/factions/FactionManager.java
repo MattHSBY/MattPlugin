@@ -253,7 +253,7 @@ public class FactionManager implements CommandExecutor {
         }
 
         if (plr.getName().equalsIgnoreCase(args[1])) {
-            sendMessage(sender, "You cannot invite yourself.");
+            sendMessage(sender, "You cannot invite yourself. Fucking retard");
             return true;
         }
 
