@@ -1,25 +1,39 @@
-package me.whispy.mattPlugin.factions;
+package me.whispy.mattPlugin.chat;
 
+import io.papermc.paper.chat.ChatRenderer;
 import io.papermc.paper.event.player.AsyncChatEvent;
+import me.whispy.mattPlugin.factions.Faction;
+import me.whispy.mattPlugin.factions.FactionManager;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.jetbrains.annotations.NotNull;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
-public class ChatEvent implements Listener{
+import javax.inject.Named;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+public class ChatListener implements Listener, ChatRenderer {
     private FactionManager FM;
-    public ChatEvent(FactionManager FM) {
+    public ChatListener(FactionManager FM) {
         this.FM = FM;
     }
     @EventHandler
     public void onChat(AsyncChatEvent e) {
-        Component msg = e.message();
-        String str = PlainTextComponentSerializer.plainText().serialize(msg);
-        msg = Component.text("");
+        e.renderer(this);
+    }
+
+    private Component greentext(Component message) {
+        String str = PlainTextComponentSerializer.plainText().serialize(message);
+
+        Component msg = Component.text("");
         int currentcolour = 0;
         for (int i =0;i<str.length();i++) {
             if (str.charAt(i) == '>') {
@@ -28,28 +42,47 @@ public class ChatEvent implements Listener{
             } else if (str.charAt(i) == '<') {
                 msg = msg.append(Component.text(str.charAt(i),NamedTextColor.GOLD));
                 currentcolour = 2;
-            } else if (currentcolour == 1) {
-                msg = msg.append(Component.text(str.charAt(i),NamedTextColor.GREEN));
-
-            } else if (currentcolour == 2) {
-                msg = msg.append(Component.text(str.charAt(i),NamedTextColor.GOLD));
             } else {
-                msg = msg.append(Component.text(str.charAt(i)));
-            }
-        }
-        for (int i = 0;i<FM.getFactions().size();i++) {
-            for (int v = 0;v<FM.getFactions().get(i).getMembers().size();v++) {
-                if (FM.getFactions().get(i).getMembers().get(v).equals(e.getPlayer().getUniqueId())) {
-                    String playerName = e.getPlayer().getName();
-                    Component ogmsg = msg.color(NamedTextColor.WHITE);
-                    Component prefix = Component.text("["+FM.getFactions().get(i).getName()+"]", getColour(i));
-                    e.setCancelled(true);
-                    Component formattedMessage = prefix.append(Component.text("<"+playerName+"> ",getNamedTextColor(String.valueOf(ChatColor.WHITE)))).append(ogmsg);
-                    Bukkit.broadcast(formattedMessage);
+                if (currentcolour == 1) {
+                    msg = msg.append(Component.text(str.charAt(i),NamedTextColor.GREEN));
+
+                } else if (currentcolour == 2) {
+                    msg = msg.append(Component.text(str.charAt(i),NamedTextColor.GOLD));
+                } else {
+                    msg = msg.append(Component.text(str.charAt(i)));
                 }
             }
         }
+        message = msg;
+        return message;
     }
+
+    @Override
+    public @NotNull Component render(@NotNull Player source, @NotNull Component sourceDisplayName, @NotNull Component message, @NotNull Audience viewer) {
+        message = greentext(message);
+        Component newmessage = Component.text("");
+        List<Faction> factions = FM.getFactions();
+        Faction playerfaction = null;
+        for (int i= 0;i<factions.size();i++) {
+            Faction faction = factions.get(i);
+            List<UUID> members = faction.getMembers();
+            for (int v =0;v<members.size();v++) {
+                UUID member = members.get(v);
+                if (member.equals(source.getUniqueId())) {
+                    playerfaction = faction;
+                }
+            }
+        }
+        if (playerfaction != null) {
+            newmessage = Component.text("["+playerfaction.getName()+"]", getNamedTextColor(playerfaction.getChatColour()));
+            newmessage = newmessage.append(Component.text("<",NamedTextColor.WHITE));
+            newmessage = newmessage.append(sourceDisplayName.color(NamedTextColor.WHITE));
+            newmessage = newmessage.append(Component.text("> ", NamedTextColor.WHITE));
+        }
+        message = newmessage.append(message.color(NamedTextColor.WHITE));
+        return message;
+    }
+
     private NamedTextColor getNamedTextColor(String colour) {
 
         if (colour.equalsIgnoreCase(String.valueOf(ChatColor.AQUA))) {
@@ -93,5 +126,9 @@ public class ChatEvent implements Listener{
 
         return tc;
     }
+
+
+
+
 
 }

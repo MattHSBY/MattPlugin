@@ -81,19 +81,14 @@ public class FactionManager implements CommandExecutor {
                 sendMessage(sender,"Wrong format, try /faction chat <Message>");
                 return true;
             }
-
             String[] Targs = new String[args.length+1];
             Targs[0] = "";
             for (int i =0;i<args.length;i++) {
                 Targs[i+1] = args[i];
             }
             this.args = Targs;
-
             return f_chat(plr);
-
         }
-
-
         if (args.length == 0) {
             return f_help();
         }//by this point, we now know that args is not empty, bc if it was, the method would return.
@@ -195,6 +190,15 @@ public class FactionManager implements CommandExecutor {
         sender.sendMessage(message);
     }
 
+    private void broadcastToFaction(Faction faction,String message) {
+        for (int i =0;i<faction.getMembers().size();i++) {
+            Player plr = Bukkit.getPlayer(faction.getMembers().get(i));
+            if (plr != null) {
+                sendMessage(plr,message);
+            }
+        }
+    }
+
     private boolean f_help() {
         sendHelpMessage();
         return true;
@@ -253,7 +257,7 @@ public class FactionManager implements CommandExecutor {
         }
 
         if (plr.getName().equalsIgnoreCase(args[1])) {
-            sendMessage(sender, "You cannot invite yourself. Fucking retard");
+            sendMessage(sender, "You cannot invite yourself.");
             return true;
         }
 
@@ -398,8 +402,9 @@ public class FactionManager implements CommandExecutor {
         if (faction.getMembers().get(0).equals(plr.getUniqueId())) {
             for (int i =0;i<factions.size();i++) {
                 if (factions.get(i).equals(faction)) {
+
+                    broadcastToFaction(faction,"faction disbanded.");
                     factions.remove(i);
-                    sendMessage(plr,"faction disbanded.");
                     break;
                 }
             }
@@ -425,7 +430,10 @@ public class FactionManager implements CommandExecutor {
         }
         faction.removeMember(plr.getUniqueId(),plr.getName());
         sendMessage(plr,"you have left the faction.");
-
+        Player owner = Bukkit.getPlayer(faction.getMembers().getFirst());
+        if (owner != null) {
+            sendMessage(owner, plr.getName() + " has left the faction.");
+        }
         return true;
     }
 
@@ -433,23 +441,35 @@ public class FactionManager implements CommandExecutor {
         Faction faction = getFactionFromPlayer(plr.getUniqueId());
         String target = args[1];
         if (faction == null) {
-            sendMessage(plr,"you are not in a faction!");
+            sendMessage(plr,"You are not in a faction!");
             return true;
         }
         boolean found = false;
+        int index = 0;
         for (int i =0;i<faction.getMembers().size();i++) {
             if (faction.getMemberNames().get(i).equalsIgnoreCase(target)) {
                 found = true;
+                index = i;
             }
         }
         if (!found) {
-            sendMessage(plr,"that player is not in your faction.");
+            sendMessage(plr,"That player is not in your faction.");
             return true;
         }
+        if (target.equalsIgnoreCase(plr.getName())) {
+            sendMessage(plr, "You cannot kick yourself. Autistic piece of shit.");
+            return true;
+        }
+        UUID plrtarget = faction.getMembers().get(index);
 
 
-        if (faction.getMembers().get(0).equals(plr.getUniqueId())) {
+        if (faction.getMembers().getFirst().equals(plr.getUniqueId())) {
             sendMessage(plr,target +" has been kicked.");
+            Player targetplr = Bukkit.getPlayer(target);
+            faction.removeMember(plrtarget,target);
+            if (targetplr != null) {
+                sendMessage(targetplr,"You have been kicked from "+faction.getName());
+            }
             return true;
         } else {
             sendMessage(plr,"you do not have permission to do this.");
@@ -507,19 +527,9 @@ public class FactionManager implements CommandExecutor {
         for (int i =1;i<args.length;i++) {
             msg += args[i] + " ";
         }
-        for (int i =0;i<faction.getMembers().size();i++) {
-            UUID member = faction.getMembers().get(i);
-            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(member);
-            if (offlinePlayer.isOnline()) {
-                sendMessage(offlinePlayer.getPlayer(),msg);
-
-            }
-
-
-        }
+        broadcastToFaction(faction,msg);
         return true;
     }
-
 
     private boolean f_colour(Player plr) {
         if (args.length!=2) {
@@ -604,6 +614,7 @@ public class FactionManager implements CommandExecutor {
     }
 
 
+
     private ArrayList<Faction> loadFactions() throws FileNotFoundException {
         ArrayList<Faction> loadedFactions = new ArrayList<>();
         Scanner factionfile = new Scanner(new File("plugins/Factions/factions.txt"));
@@ -656,14 +667,6 @@ public class FactionManager implements CommandExecutor {
         sendMessage(sender,HelpMessage);
     }
 
-    private boolean isFormatCorrect(Command cmd, String label, String[] args) {
-        //just a private method so I can have my
-        //onCommand() method all nice and tidy and have all the format checks on one line.
-        if (cmd.getName().equalsIgnoreCase("f") || cmd.getName().equalsIgnoreCase("faction")) { //check if the command is actually the right command "/f"
-            return true;
-        }
-        return false;
-    }
 
 
 }

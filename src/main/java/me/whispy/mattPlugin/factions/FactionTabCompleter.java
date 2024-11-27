@@ -17,26 +17,56 @@ import java.util.UUID;
 public class FactionTabCompleter implements TabCompleter {
     private FactionManager FM;
 
+    private CommandSender sender;
+    private Command cmd;
+    private String alias;
+    private String[] args;
+
+    private List<String> commands = new ArrayList<>();
+
+
     public FactionTabCompleter(FactionManager FM) {
         this.FM = FM;
+        commands.add("help");
+        commands.add("create");//
+        commands.add("invite");//
+        commands.add("accept");//
+        commands.add("decline");//
+        commands.add("list");
+        commands.add("disband");
+        commands.add("leave");
+        commands.add("home");
+        commands.add("sethome");
+        commands.add("colour");
+        commands.add("kick");
+    }
+
+    private List<String> removeNotApplicable(List<String> cmdargs, int argindex) {
+        String str = args[argindex];
+        List<String> newargs = new ArrayList<String>();
+
+        //loop through currently applicable cmd args, check if they match with the string so far, then remove the ones that don't
+        for (String cmdarg : cmdargs) {
+            if (str.length() < cmdarg.length()) {
+                if (cmdarg.substring(0, str.length()).equalsIgnoreCase(str)) {
+                    newargs.add(cmdarg);
+                }
+            }
+        }
+        return newargs;
     }
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String alias, @NotNull String[] args) {
+        this.sender = sender;
+        this.args = args;
+        this.cmd = cmd;
+        this.alias = alias;
+
         if (args.length == 1) {
-            List<String> commands = new ArrayList<>();
-            commands.add("help");
-            commands.add("create");//
-            commands.add("invite");//
-            commands.add("accept");//
-            commands.add("decline");//
-            commands.add("list");
-            commands.add("disband");
-            commands.add("leave");
-            commands.add("home");
-            commands.add("sethome");
-            commands.add("colour");
-            return commands;
+
+            List<String> newcommands = removeNotApplicable(commands,0);
+            return newcommands;
         }
 
         List<String> CMDargs = new ArrayList<>();
@@ -45,7 +75,6 @@ public class FactionTabCompleter implements TabCompleter {
 
             if (sender instanceof Player) {
                 localplayer = (Player) sender;
-
             }
             if (args[0].equalsIgnoreCase("invite")) {
                 //loop through online players and check if they are in the plr's faction, if not, suggest that one.
@@ -66,8 +95,21 @@ public class FactionTabCompleter implements TabCompleter {
                                 }
                             }
                             if (!thisplayerinfaction) {
-                                CMDargs.add(player.getName());
+                                boolean thisplayerhasinvite = false;
+
+                                for (int v = 0;v<F.getInvites().size();v++) {
+                                    UUID invite = F.getInvites().get(v);
+                                    if (invite.equals(uuid)) {
+                                        thisplayerhasinvite = true;
+                                    }
+                                }
+
+
+                                if (!thisplayerhasinvite) {
+                                    CMDargs.add(player.getName());
+                                }
                             }
+
                         }
                     }
                 }
@@ -100,9 +142,10 @@ public class FactionTabCompleter implements TabCompleter {
                 ArrayList<String> colours = getStrings();
                 return colours;
                 }
-            }
 
-
+            CMDargs = removeNotApplicable(CMDargs,1);
+            return CMDargs;
+        }
         return CMDargs;
     }
 
