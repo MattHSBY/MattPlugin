@@ -1,0 +1,13 @@
+name: MattPlugin
+version: '1.0-SNAPSHOT'
+main: me.whispy.mattPlugin.MattPlugin
+api-version: '1.21'
+authors: [ matt ]
+description: all the shit I was gonna ,maekj
+commands:
+  faction:
+    description: make/manage factions
+    aliases: [f,fl,fc]
+  whisper:
+    description: send discrete messages to individual players
+    aliases: [msg, w, dm, message, r]
