@@ -28,5 +28,5 @@ Command is /faction, shortcut /f,
 ### Chat functions
 - /whisper <Player> <message> (shortcuts : /w, /msg, /message, /dm) : message a specific player a specific message (Yes, this looks exactly the same as the default whisper system, but it's my code running it)
 - /reply <message> (shortcut : /r) : reply to the last person who messaged you with the message.
-- >message : greentext, everything after (and including) a '>' in any message becomes coloured green.
-- <message : orangetext, everything after (and including) a '<' in any message becomes coloured orange.
+- \> <message> : greentext, everything after (and including) a '>' in any message becomes coloured green.
+- \< <message> : orangetext, everything after (and including) a '<' in any message becomes coloured orange.
