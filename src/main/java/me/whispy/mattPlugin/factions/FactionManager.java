@@ -479,7 +479,6 @@ public class FactionManager implements CommandExecutor {
 
     private boolean f_home(Player plr) { //gonna mess up over dimensions, will need to revise at some point but cba
         Faction faction = getFactionFromPlayer(plr.getUniqueId());
-        String target = args[1];
         if (faction == null) {
             sendMessage(plr,"you are not in a faction!");
             return true;
@@ -493,7 +492,6 @@ public class FactionManager implements CommandExecutor {
 
     private boolean f_sethome(Player plr) {
         Faction faction = getFactionFromPlayer(plr.getUniqueId());
-        String target = args[1];
         if (faction == null) {
             sendMessage(plr,"you are not in a faction!");
             return true;
@@ -504,18 +502,12 @@ public class FactionManager implements CommandExecutor {
         } else {
             sendMessage(plr,"You do not have permission to set the faction home.");
         }
-
-
-
-
-
         return true;
     }
 
     private boolean f_chat(Player plr) {
         //format is /faction chat <message>
         Faction faction = getFactionFromPlayer(plr.getUniqueId());
-        String target = args[1];
         if (faction == null) {
             sendMessage(plr,"you are not in a faction!");
             return true;
