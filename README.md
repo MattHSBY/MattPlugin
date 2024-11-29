@@ -1,16 +1,16 @@
-#MattPlugin
+# MattPlugin
 This plugin was developed by me - Matt.
 This plugin is for paper servers 1.21, it was developed for a private 1.21.3 SMP server.
 The plugin has functionality for cosmetic factions, some chat functions and will (probably) eventually also include 'vanity-hats' functionality.
 
-#How 2 use
-##Building the plugin
+# How 2 use
+## Building the plugin
 Create a new folder and open a terminal in that location (if on windows, click on the path bar at the top of file explorer, and replace the path text with the text 'cmd'.) Type : `git clone https://github.com/MattHSBY/MattPlugin.git` (have git installed also lol),
 the build will be in the folder `build/libs`. Alternatively, just download the latest release.
-##Installation
+## Installation
 Put jar in the plugins folder of paper server, donezo.
-##Commands and stuffs
-###factions:
+## Commands and stuffs
+### factions:
 Command is /faction, shortcut /f,
 - /f create <Faction_Name> : create a faction with given name.
 - /f invite <Player> : invite a player, only works if you are in a faction and also the owner of said faction.
@@ -25,7 +25,7 @@ Command is /faction, shortcut /f,
 - /f chat <message> (shortcut : /fc) : send a message to only your faction.
 - /f colour <ChatColor> : changes the colour of your faction chat tag.
 
-###Chat functions
+### Chat functions
 - /whisper <Player> <message> (shortcuts : /w, /msg, /message, /dm) : message a specific player a specific message (Yes, this looks exactly the same as the default whisper system, but it's my code running it)
 - /reply <message> (shortcut : /r) : reply to the last person who messaged you with the message.
 - > <message> : greentext, everything after (and including) a '>' in any message becomes coloured green.
