@@ -1,6 +1,7 @@
 package me.whispy.mattPlugin;
 
 import me.whispy.mattPlugin.chat.ChatListener;
+import me.whispy.mattPlugin.chat.ChatTabCompleter;
 import me.whispy.mattPlugin.chat.WhisperManager;
 import me.whispy.mattPlugin.factions.FactionManager;
 import me.whispy.mattPlugin.factions.FactionTabCompleter;
@@ -25,6 +26,7 @@ public final class MattPlugin extends JavaPlugin {
         getCommand("faction").setExecutor(FM);
         getCommand("faction").setTabCompleter(new FactionTabCompleter(FM));
         getCommand("whisper").setExecutor(WM);
+        getCommand("whisper").setTabCompleter(new ChatTabCompleter(WM));
 
         getServer().getPluginManager().registerEvents(chatListener, this);
         getServer().getPluginManager().registerEvents(WM, this);

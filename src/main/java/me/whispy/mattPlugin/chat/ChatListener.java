@@ -12,6 +12,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.jetbrains.annotations.NotNull;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
@@ -22,6 +23,26 @@ import java.util.UUID;
 
 public class ChatListener implements Listener, ChatRenderer {
     private FactionManager FM;
+
+
+    @EventHandler
+    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent e) {
+        String message = e.getMessage();
+        String[] array = message.split(" ");
+        if (array[0].equalsIgnoreCase("/whisper")
+                || array[0].equalsIgnoreCase("/w")
+                || array[0].equalsIgnoreCase("/dm")
+                || array[0].equalsIgnoreCase("/msg")
+                || array[0].equalsIgnoreCase("/message")//[msg, w, dm, message, r, reply]
+                || array[0].equalsIgnoreCase("/r")
+                || array[0].equalsIgnoreCase("/reply")
+        ) {
+
+
+        }
+    }
+
+
     public ChatListener(FactionManager FM) {
         this.FM = FM;
     }

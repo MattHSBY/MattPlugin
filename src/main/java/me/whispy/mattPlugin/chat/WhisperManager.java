@@ -77,7 +77,7 @@ public class WhisperManager implements CommandExecutor, Listener {
         //sender is a player, there are more than 0 args.
 
 
-        if (label.equalsIgnoreCase("r")) {
+        if (label.equalsIgnoreCase("r") || label.equalsIgnoreCase("reply")) {
             UUID replyID = getReplyDirFromSender(plr.getUniqueId());
             if (replyID == null) {
                 sender.sendMessage(Component.text("Could not find player to reply to.",NamedTextColor.RED));
